@@ -119,7 +119,7 @@ def execute_task(task_id):
             task.update_status('finished' if result else 'failed', result)
             except Exception as e:
             task.update_status('failed', 0)
-```python
+
 
 
 ## 注意事项
