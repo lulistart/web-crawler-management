@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>爬虫任务管理</title>
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui/css/layui.css">
+</head>
+<body>
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">爬虫任务管理系统</div>
+        </div>
+        
+        <div class="layui-body" style="padding: 15px;">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div class="layui-btn-group">
+                        <button class="layui-btn" id="addTask">新建任务</button>
+                        <button class="layui-btn layui-btn-normal" id="batchAddTask">批量新建</button>
+                        <button class="layui-btn" id="batchStart">批量开始</button>
+                        <button class="layui-btn layui-btn-danger" id="batchDelete">批量删除</button>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <table id="taskTable" lay-filter="taskTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% raw %}
+    <!-- 修改操作按钮模板 -->
+    <script type="text/html" id="tableToolbar">
+        <div class="layui-btn-container">
+        {{# if(d.status == 'waiting'){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="start">开始</a>
+        {{# } }}
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </div>
+    </script>
+    
+    <!-- 修改状态显示模板 -->
+    <script type="text/html" id="statusTpl">
+        {{#  
+        var status = {
+            waiting: '<span class="layui-badge layui-bg-gray">等待执行</span>',
+            running: '<span class="layui-badge layui-bg-blue">执行中</span>',
+            finished: '<span class="layui-badge layui-bg-green">执行成功</span>',
+            failed: '<span class="layui-badge layui-bg-red">执行失败</span>'
+        }; 
+        }}
+        {{# return status[d.status] || d.status; }}
+    </script>
+    {% endraw %}
+    
+    <!-- 修改新建任务表单模板 -->
+    <script type="text/html" id="addTaskTpl">
+        <form class="layui-form" style="padding: 20px;" lay-filter="addTaskForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" required lay-verify="required" placeholder="请输入任务名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">URL</label>
+                <div class="layui-input-block">
+                    <input type="text" name="url" required lay-verify="required" placeholder="请输入URL" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="createTask">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </script>
+    
+    <!-- 批量新建任务表单模板 -->
+    <script type="text/html" id="batchAddTaskTpl">
+        <form class="layui-form" style="padding: 20px;" lay-filter="batchAddTaskForm">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">任务列表</label>
+                <div class="layui-input-block">
+                    <textarea name="tasks" placeholder="请输入任务列表，每行一个任务，格式：任务名称-任务URL" class="layui-textarea" style="height: 300px;"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="batchCreateTask">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <div class="layui-text">
+                        <p style="color: #666;">示例：</p>
+                        <p>任务1-http://example1.com</p>
+                        <p>任务2-http://example2.com</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </script>
+    
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '/static/js/'
+        }).use(['main']);
+    </script>
+</body>
+</html> 
